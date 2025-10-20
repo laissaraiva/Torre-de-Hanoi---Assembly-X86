@@ -7,7 +7,7 @@
 section .data
     ; Mensagem que pede ao usuário para digitar o número de discos.
     ; 'db' significa 'define byte', armazenando a string como uma sequência de caracteres.
-    msg_input           db  "Digite a quantidade de discos com que voce deseja jogar (0-9): " ; Modificado
+    msg_input           db  "Digite a quantidade de discos com que voce deseja jogar (0-9): " ; Mensagem de entrada (aceita 0-9).
     ; 'equ' (equate) cria uma constante simbólica. '$ - msg_input' calcula
     ; o tamanho da mensagem automaticamente.
     len_input           equ $ - msg_input
@@ -33,6 +33,7 @@ section .data
     len_concluido       equ $ - msg_concluido
     
     ; *** NOVO: Mensagem para 0 discos ***
+    ; Mensagem especial exibida se o usuário digitar 0.
     msg_zero_discos     db  "Nenhum disco para mover. Concluído!", 0x0A
     len_zero_discos     equ $ - msg_zero_discos
 
@@ -155,8 +156,8 @@ output_movimento:
 ;   cl: (parte de rcx) Torre de destino.
 hanoi:
     ; *** NOVO: Verifica o caso base n=0 (não faz nada). ***
-    cmp     dl, 0
-    je      .hanoi_fim
+    cmp     dl, 0               ; Compara o número de discos (dl) com 0.
+    je      .hanoi_fim          ; Se for igual a 0, pula para o fim da função.
     
     ; Verifica se estamos no caso base (n == 1).
     cmp     dl, 1
@@ -195,7 +196,7 @@ hanoi:
     pop     rbx
     pop     rax
 
-    ret
+    ret                         ; Retorna da chamada recursiva
 
 .caso_base:
     ; Se n=1, simplesmente move o disco da origem para o destino.
@@ -203,7 +204,7 @@ hanoi:
     ret
     
 .hanoi_fim: ; *** NOVO: Rótulo de retorno para n=0 ***
-    ret
+    ret                         ; Retorna imediatamente se n=0.
 
 
 ; Ponto de entrada principal do programa.
@@ -225,8 +226,8 @@ _start:
     mov     [num_discos], dl     ; Armazena o número de discos na variável.
 
     ; *** NOVO: Verificação para 0 discos ***
-    cmp     dl, 0
-    je      .caso_zero_discos    ; Se for 0, pula para o tratamento especial.
+    cmp     dl, 0                ; Compara o número de discos digitado com 0.
+    je      .caso_zero_discos    ; Se for igual a 0, pula para o tratamento especial.
 
 ; --- Caso normal (1-9 discos) ---
     ; Exibe a mensagem inicial com o número de discos.
@@ -250,10 +251,10 @@ _start:
 
 .caso_zero_discos:
     ; *** NOVO: Imprime a mensagem especial para 0 discos ***
-    mov     rsi, msg_zero_discos
-    mov     rdx, len_zero_discos
-    call    output
-    ; O fluxo segue para .fim_programa
+    mov     rsi, msg_zero_discos  ; Prepara a mensagem de 0 discos.
+    mov     rdx, len_zero_discos  ; Prepara o tamanho da mensagem.
+    call    output                ; Exibe a mensagem.
+    ; O fluxo segue para .fim_programa (não precisa de jmp)
 
 .fim_programa:
     ; Finaliza o programa.
