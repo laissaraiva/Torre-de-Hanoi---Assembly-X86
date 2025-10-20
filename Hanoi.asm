@@ -32,7 +32,7 @@ section .data
     msg_concluido       db  "Concluido!", 0x0A
     len_concluido       equ $ - msg_concluido
     
-    ; *** NOVO: Mensagem para 0 discos ***
+    ; *** Mensagem para 0 discos ***
     ; Mensagem especial exibida se o usuário digitar 0.
     msg_zero_discos     db  "Nenhum disco para mover. Concluído!", 0x0A
     len_zero_discos     equ $ - msg_zero_discos
@@ -155,7 +155,7 @@ output_movimento:
 ;   bl: (parte de rbx) Torre auxiliar.
 ;   cl: (parte de rcx) Torre de destino.
 hanoi:
-    ; *** NOVO: Verifica o caso base n=0 (não faz nada). ***
+    ; *** Verifica o caso base n=0 (não faz nada). ***
     cmp     dl, 0               ; Compara o número de discos (dl) com 0.
     je      .hanoi_fim          ; Se for igual a 0, pula para o fim da função.
     
@@ -203,7 +203,7 @@ hanoi:
     call    output_movimento
     ret
     
-.hanoi_fim: ; *** NOVO: Rótulo de retorno para n=0 ***
+.hanoi_fim: ; *** Rótulo de retorno para n=0 ***
     ret                         ; Retorna imediatamente se n=0.
 
 
@@ -225,7 +225,7 @@ _start:
     sub     dl, '0'              ; Subtrai o valor ASCII de '0' para obter o número (ex: '5' - '0' = 5).
     mov     [num_discos], dl     ; Armazena o número de discos na variável.
 
-    ; *** NOVO: Verificação para 0 discos ***
+    ; *** Verificação para 0 discos ***
     cmp     dl, 0                ; Compara o número de discos digitado com 0.
     je      .caso_zero_discos    ; Se for igual a 0, pula para o tratamento especial.
 
@@ -250,7 +250,7 @@ _start:
     jmp     .fim_programa       ; Pula para a saída
 
 .caso_zero_discos:
-    ; *** NOVO: Imprime a mensagem especial para 0 discos ***
+    ; *** Imprime a mensagem para 0 discos ***
     mov     rsi, msg_zero_discos  ; Prepara a mensagem de 0 discos.
     mov     rdx, len_zero_discos  ; Prepara o tamanho da mensagem.
     call    output                ; Exibe a mensagem.
