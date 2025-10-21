@@ -1,0 +1,177 @@
+section .data
+    msg_input         db  "Digite a quantidade de discos com que voce deseja jogar (1-9): "
+    len_input         equ $ - msg_input
+
+    msg_inicial       db  "Algoritmo da Torre de Hanoi com "
+    msg_discos        db  " "
+                      db  " discos", 0x0A
+    len_inicial       equ $ - msg_inicial
+
+    msg_mova          db  "Mova disco "
+    msg_disco_atual   db  " "
+                      db  " da Torre "
+    msg_torre_origem  db  " "
+                      db  " para a Torre "
+    msg_torre_destino db  " "
+                      db  0x0A
+    len_movimento     equ $ - msg_mova
+
+    msg_concluido     db  "Concluido!", 0x0A
+    len_concluido     equ $ - msg_concluido
+
+section .bss
+    entrada_numero    resb 2
+    num_discos        resb 1
+
+section .text
+    global _start
+
+
+input:
+    push    rax
+    push    rdi
+    push    rsi
+    push    rdx
+
+    mov     rax, 0
+    mov     rdi, 0
+    syscall
+
+    pop     rdx
+    pop     rsi
+    pop     rdi
+    pop     rax
+    ret
+
+
+output:
+    push    rax
+    push    rdi
+    push    rsi
+    push    rdx
+
+    mov     rax, 1
+    mov     rdi, 1
+    syscall
+
+    pop     rdx
+    pop     rsi
+    pop     rdi
+    pop     rax
+    ret
+
+
+exibir_mensagem_inicial:
+    push    rax
+    push    rsi
+    push    rdx
+
+    mov     al, [num_discos]
+    add     al, '0'
+    mov     [msg_discos], al
+
+    mov     rsi, msg_inicial
+    mov     rdx, len_inicial
+    call    output
+
+    pop     rdx
+    pop     rsi
+    pop     rax
+    ret
+
+output_movimento:
+    push    rax
+    push    rbx
+    push    rcx
+    push    rdx
+    push    rsi
+
+    mov     bl, dl
+    add     bl, '0'
+    mov     [msg_disco_atual], bl
+
+    mov     [msg_torre_origem], al
+    mov     [msg_torre_destino], cl
+
+    mov     rsi, msg_mova
+    mov     rdx, len_movimento
+    call    output
+
+    pop     rsi
+    pop     rdx
+    pop     rcx
+    pop     rbx
+    pop     rax
+    ret
+
+
+hanoi:
+    cmp     dl, 1
+    je      .caso_base
+
+    push    rax
+    push    rbx
+    push    rcx
+    push    rdx
+
+    dec     rdx
+    xchg    rbx, rcx
+    call    hanoi
+
+    pop     rdx
+    pop     rcx
+    pop     rbx
+    pop     rax
+
+    call    output_movimento
+
+    push    rax
+    push    rbx
+    push    rcx
+    push    rdx
+
+    dec     rdx
+    xchg    rax, rbx
+    call    hanoi
+
+    pop     rdx
+    pop     rcx
+    pop     rbx
+    pop     rax
+
+    ret
+
+.caso_base:
+    call    output_movimento
+    ret
+
+
+_start:
+    mov     rsi, msg_input
+    mov     rdx, len_input
+    call    output
+
+    mov     rsi, entrada_numero
+    mov     rdx, 2
+    call    input
+
+    mov     dl, [entrada_numero]
+    sub     dl, '0'
+
+    mov     [num_discos], dl
+
+    call    exibir_mensagem_inicial
+
+    mov     al, 'A'
+    mov     bl, 'B'
+    mov     cl, 'C'
+
+    call    hanoi
+
+    mov     rsi, msg_concluido
+    mov     rdx, len_concluido
+    call    output
+
+    mov     rax, 60
+    xor     rdi, rdi
+    syscall
